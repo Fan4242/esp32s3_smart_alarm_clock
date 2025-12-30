@@ -1,0 +1,8 @@
+# clangd生成文件
+.cache/
+
+# 构建文件
+build/
+
+# cursor操作记录文件
+cursor_change.md

@@ -1,0 +1,83 @@
+{
+    "idf.pythonInstallPath": "/home/fc/.espressif/python_env/idf5.4_py3.8_env/bin/python",
+    "files.associations": {
+        "random": "c",
+        "i2c_master.h": "c"
+    },
+    // 编辑器快速建议设置
+    "editor.quickSuggestions": {
+        "other": "on", // 启用其他语言的快速建议
+        "strings": "inline", // 字符串中的内联建议
+        "comments": "inline" // 注释中的内联建议
+    },
+    // 触发字符时显示建议
+    "editor.suggestOnTriggerCharacters": true,
+    // 禁用提交字符时自动接受建议（只显示列表，不自动补全）
+    "editor.acceptSuggestionOnCommitCharacter": false,
+    // 禁用 Tab 键自动补全
+    "editor.tabCompletion": "off",
+    // 禁用保存时自动格式化（Ctrl+S 时只保存，不格式化）
+    "editor.formatOnSave": false,
+    // 禁用粘贴时自动格式化
+    "editor.formatOnPaste": false,
+    // 禁用输入时自动格式化
+    "editor.formatOnType": false,
+    // C 语言特定设置：禁用保存时格式化
+    "[c]": {
+        "editor.formatOnSave": false
+    },
+    "[cpp]": {
+        "editor.formatOnSave": false
+    },
+    // ========== 禁用 C/C++ 扩展自动添加头文件 ==========
+    "C_Cpp.autocompleteAddParentheses": false,        // 禁用自动添加括号
+    "C_Cpp.errorSquiggles": "enabled",                 // 启用错误波浪线
+    "C_Cpp.suggest.includeSuggestions": false,         // 禁用自动包含建议（最重要：防止自动添加头文件）
+    "C_Cpp.intelliSenseEngine": "default",            // IntelliSense 引擎设置（怀疑会自动补全！）
+    "C_Cpp.autocomplete": "default",                   // 自动补全设置
+    
+    // ========== 禁用 clangd 自动添加头文件 ==========
+    // clangd 扩展设置：禁用自动插入头文件
+    "clangd.arguments": [
+        "--header-insertion=never",           // 永远不自动插入头文件
+        "--completion-style=detailed",        // 详细补全样式
+        "--background-index",                 // 后台索引
+        "--clang-tidy"                        // 启用 clang-tidy
+    ],
+    // 禁用 clangd 的自动包含功能
+    "clangd.completion.enable": true,
+    "clangd.completion.allScopes": false,
+    // 禁用 clangd 的自动修复（可能包含添加头文件）
+    "clangd.fallbackFlags": [],
+    // 自动显示建议的延迟时间（毫秒）
+    "editor.quickSuggestionsDelay": 10,
+    // 建议优先级设置
+    "editor.suggestSelection": "first",
+    // 显示建议的详细信息
+    "editor.suggest.showMethods": true,
+    "editor.suggest.showFunctions": true,
+    "editor.suggest.showConstructors": true,
+    "editor.suggest.showFields": true,
+    "editor.suggest.showVariables": true,
+    "editor.suggest.showClasses": true,
+    "editor.suggest.showStructs": true,
+    "editor.suggest.showInterfaces": true,
+    "editor.suggest.showModules": true,
+    "editor.suggest.showProperties": true,
+    "editor.suggest.showEvents": true,
+    "editor.suggest.showOperators": true,
+    "editor.suggest.showUnits": true,
+    "editor.suggest.showValues": true,
+    "editor.suggest.showConstants": true,
+    "editor.suggest.showEnums": true,
+    "editor.suggest.showEnumMembers": true,
+    "editor.suggest.showKeywords": true,
+    "editor.suggest.showWords": true,
+    "editor.suggest.showColors": true,
+    "editor.suggest.showFiles": true,
+    "editor.suggest.showReferences": true,
+    "editor.suggest.showCustomcolors": true,
+    "editor.suggest.showFolders": true,
+    "editor.suggest.showTypeParameters": true,
+    "editor.suggest.showSnippets": true,
+}

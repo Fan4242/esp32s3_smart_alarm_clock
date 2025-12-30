@@ -1,0 +1,63 @@
+{
+    "While Loop with condition": {
+        "prefix": "wh",
+        "body": [
+            "while (${1:condition})",
+            "{",
+            "\t$0",
+            "}"
+        ],
+        "description": "While loop with condition"
+    },
+    "If Statement": {
+        "prefix": "if",
+        "body": [
+            "if (${1:expression})",
+            "{",
+            "\t$0",
+            "}"
+        ],
+        "description": "If statement with braces on new line"
+    },
+    "Else Statement": {
+        "prefix": "else",
+        "body": [
+            "else",
+            "{",
+            "\t$0",
+            "}"
+        ],
+        "description": "Else statement with braces on new line"
+    },
+    "If-Else Statement": {
+        "prefix": "ifelse",
+        "body": [
+            "if (${1:expression})",
+            "{",
+            "\t$0",
+            "}",
+            "else",
+            "{",
+            "\t$1",
+            "}"
+        ],
+        "description": "If-else statement with braces on new line"
+    },
+    "Define Macro": {
+        "prefix": "#define",
+        "body": [
+            "#define ${0}"
+        ],
+        "description": "Define macro without parentheses"
+    },
+    "typedef struct Loop": {
+        "prefix": "typ",
+        "body": [
+            "typedef struct",
+            "{",
+            "\t${0}",
+            "} ${1:strcut_name};"
+        ],
+        "description": "typedef struct loop with strcut name"
+    }
+}

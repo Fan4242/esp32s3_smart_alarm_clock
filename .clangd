@@ -1,0 +1,16 @@
+# clangd 配置文件
+# 禁用自动插入头文件功能
+
+CompileFlags:
+  Add: 
+    - --header-insertion=never    # 永远不自动插入头文件
+
+Diagnostics:
+  UnusedIncludes: None            # 不显示未使用头文件的警告（避免建议删除/添加）
+
+Index:
+  Background: Build               # 后台索引
+
+Completion:
+  AllScopes: false                # 不在所有作用域中补全
+
