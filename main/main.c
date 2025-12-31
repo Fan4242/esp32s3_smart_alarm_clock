@@ -16,14 +16,14 @@
 #include "nvs_flash.h"
 #include "weather.h"
 #include "esp_spiffs.h"
+#include "board_config.h"
+#include "nocodec_audio.h"  //音频播放头文件
+#include <sys/stat.h>   //获取文件状态头文件
 
 #define TAG "main"
 
-#define XL9555_SDA GPIO_NUM_10
-#define XL9555_SCL GPIO_NUM_11
-
-#define LCD_RSR_IO IO1_3
-#define LCD_BL_IO IO1_2
+//I2S采样率
+#define SAMPLE_RATE         24000
 
 lv_ui guider_ui;
 
@@ -44,6 +44,21 @@ static void img_spiffs_init(void)
     ESP_ERROR_CHECK(esp_vfs_spiffs_register(&conf));
 }
 
+//spiffs文件系统挂载点
+#define AUDIO_MOUNT     "/spiffs"
+//初始化spiffs文件系统
+void audio_spiffs_init(void)
+{
+    esp_vfs_spiffs_conf_t conf = {
+      .base_path = AUDIO_MOUNT,     //挂载点
+      .partition_label = "audio",  //指定spiffs分区，如果为NULL，则默认为分区表中第一个spiffs类型的分区
+      .max_files = 2,               //最大可同时打开的文件数
+      .format_if_mount_failed = true
+    };
+
+    //初始化和挂载spiffs分区
+    esp_vfs_spiffs_register(&conf);
+}
 
 // 按位表示
 static volatile uint16_t xl9555_button_level = 0xFFFF;
@@ -128,9 +143,7 @@ static void lv_timer_test(lv_timer_t *t)
     }
 }
 
-void test_widget(void)
-{
-}
+
 
 // sntp回调函数
 static void sntp_finish_callback(struct timeval *tv)
@@ -164,11 +177,46 @@ void wifi_state_callback(WIFI_STATE state)
     }
 }
 
+//开始播放声音
+void start_play(void)
+{
+    const size_t write_size_byte = 8192;
+    struct stat st;
+    if(stat(AUDIO_MOUNT"/record.pcm",&st) == 0)
+    {
+        ESP_LOGI(TAG,"record.pcm filesize:%ld",st.st_size);
+    }
+    FILE *f = fopen(AUDIO_MOUNT"/record.pcm", "r");
+    if(!f)
+    {
+        ESP_LOGI(TAG,"record.pcm open fail!");
+        return;
+    }
+    ESP_LOGI(TAG,"Start play");
+    uint8_t *i2s_write_buff = malloc(write_size_byte);
+    if(!i2s_write_buff)
+    {
+        fclose(f);
+        return;
+    }
+    size_t read_byte = 0;
+    do
+    {
+        fread(i2s_write_buff,write_size_byte,1,f);
+        audio_write((const int16_t*)i2s_write_buff,write_size_byte/2);
+        read_byte += write_size_byte;
+        vTaskDelay(pdMS_TO_TICKS(10));
+    } while (read_byte < st.st_size);
+    free(i2s_write_buff);
+    fclose(f);
+    ESP_LOGI(TAG,"Play done");
+}
+
 void app_main(void)
 {
     nvs_flash_init(); // 进行nvs初始化
-    xl9555_init(XL9555_SDA, XL9555_SCL, GPIO_NUM_17, xl9555_input_callback);
-    xl9555_ioconfig(~(LCD_RSR_IO | LCD_BL_IO) & 0xFFFF); // 将IO1_3的位掩码清0设置为输出，其他为输入
+    xl9555_init(XL9555_SDA, XL9555_SCL, XL9555_INT, xl9555_input_callback);
+    xl9555_ioconfig(~(LCD_RSR_IO | LCD_BL_IO | SPK_EN_IO) & 0xFFFF); // 将相应的位掩码清0设置为输出，其他为输入
     xl9555_pin_write(LCD_BL_IO, 1);
     img_spiffs_init();
     lv_port_init();
@@ -177,6 +225,15 @@ void app_main(void)
     custom_init(&guider_ui);
     lvgl_port_unlock();
     button_init();
+    //喇叭初始化
+    init_speaker(AUDIO_BCLK_IO, AUDIO_WS_IO, AUDIOS_DOUT_IO, SAMPLE_RATE);
+    //初始化spiff文件系统
+    audio_spiffs_init();
+    //拉高SPK_EN_IO,为后续开始播放音频做准备
+    xl9555_pin_write(SPK_EN_IO,1);
+    vTaskDelay(pdMS_TO_TICKS(100));
+    //开始播放
+    start_play();
     ap_wifi_init(wifi_state_callback); // 参数为wifi连接成功与否的回调函数
     /*进行时区设置*/
     setenv("TZ", "CST-8", 1); // 设置东八区时区
